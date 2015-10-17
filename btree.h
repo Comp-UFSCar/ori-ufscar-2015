@@ -16,7 +16,7 @@ typedef struct btree_node {
     /**< Indicates if the node is a leaf */
     int *keys;
     /**< Array containing the keys*/
-    struct btree_node *children; /**< Pointers to the children nodes*/
+    struct btree_node **children; /**< Pointers to the children nodes*/
 } btree_node;
 
 /**
@@ -53,5 +53,13 @@ btree *btree_create(int order);
  * @return If the key is found, returns the node containing the key
  */
 btree_node *btree_search(int key, btree_node *node);
+
+/**
+ * @brief Splits a child node
+ * @param node Parent node
+ * @param child Position of the child node to be splitted
+ * @param order Order of the B-Tree
+ */
+void split_child(btree_node *parent, int position, int order);
 
 #endif //ORI_UFSCAR_2015_BTREE_H
