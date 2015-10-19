@@ -62,4 +62,11 @@ btree_node *btree_search(int key, btree_node *node);
  */
 void split_child(btree_node *parent, int position, int order);
 
+/**
+ * @brief Inserts a key in a B-Tree
+ * @param tree A B-Tree
+ * @param key Key to be inserted
+ */
+void insert(btree *tree, int key);
+
 #endif //ORI_UFSCAR_2015_BTREE_H

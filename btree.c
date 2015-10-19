@@ -85,14 +85,14 @@ void insert_nonfull(btree_node *node, int key, int order) {
             i--;
         }
         node->keys[i] = key;
-
+        node->number_of_keys++;
     } else {
         //If node is not a leaf, search for the child node where the key is potentially going to be inserted
-        while (i >= 0 && key < node->keys[i - 1]) {
+        while (i > 0 && key < node->keys[i - 1]) {
             i--;
         }
 
-        i++;
+//        i++;
         btree_node *child = node->children[i];
         //If child is full, split
         if (child->number_of_keys == 2 * order - 1) {
@@ -106,18 +106,18 @@ void insert_nonfull(btree_node *node, int key, int order) {
     }
 }
 
-void insert(btree tree, int key) {
-    btree_node *root = tree.root;
+void insert(btree *tree, int key) {
+    btree_node *root = tree->root;
     //If root is full, allocates a new node
-    if (root->number_of_keys == 2 * tree.order - 1) {
-        btree_node *new_node = allocate_node(tree.order);
-        tree.root = new_node;
+    if (root->number_of_keys == 2 * tree->order - 1) {
+        btree_node *new_node = allocate_node(tree->order);
+        tree->root = new_node;
         new_node->leaf = false;
         new_node->number_of_keys = 0;
         new_node->children[0] = root;
-        split_child(new_node, 0, tree.order);
-        insert_nonfull(new_node, key, tree.order);
+        split_child(new_node, 0, tree->order);
+        insert_nonfull(new_node, key, tree->order);
     } else {
-        insert_nonfull(root, key, tree.order);
+        insert_nonfull(root, key, tree->order);
     }
 }
