@@ -69,4 +69,17 @@ void split_child(btree_node *parent, int position, int order);
  */
 void insert(btree *tree, int key);
 
+/**
+ * @brief Print a B-Tree in-order
+ * First it prints the children and then the root
+ * @param root The root of the B-Tree
+ */
+void print_post_order(btree_node *root);
+
+/**
+ * @brief Print a B-Tree node
+ * @param node A B-tree node
+ */
+void print_node(btree_node *node);
+
 #endif //ORI_UFSCAR_2015_BTREE_H

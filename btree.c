@@ -4,6 +4,7 @@
  */
 
 #include <stdbool.h>
+#include <stdio.h>
 #include "btree.h"
 #include "stdlib.h"
 
@@ -120,4 +121,22 @@ void insert(btree *tree, int key) {
     } else {
         insert_nonfull(root, key, tree->order);
     }
+}
+
+void print_post_order(btree_node *root) {
+    if (root != NULL) {
+        for (int i = 0; i <= root->number_of_keys; i++) {
+            if (!root->leaf) {
+                print_post_order(root->children[i]);
+            }
+        }
+        print_node(root);
+    }
+}
+
+void print_node(btree_node *node) {
+    for (int i = 0; i < node->number_of_keys; i++) {
+        printf("%d ", node->keys[i]);
+    }
+    printf("\n");
 }
