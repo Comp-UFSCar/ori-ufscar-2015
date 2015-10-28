@@ -184,17 +184,42 @@ int delete_key(btree *tree, btree_node *node, int key) {
         //Case 2: The node containing the key is an internal node
         if (node->leaf == false) {
             //Case 2.a.: The left child node has a number of keys equal or greater than the order of the tree
-            //In this case we move the key to be deleted to the child node and recursively delete it
+            //In this case we swap the key to be deleted from the parent node with the last key of the left child and recursively delete it
             if (node->children[index]->number_of_keys > tree->order - 1) {
                 btree_node *child = node->children[index];
                 int temp = child->keys[child->number_of_keys - 1];
                 child->keys[child->number_of_keys - 1] = node->keys[i];
                 node->keys[i] = temp;
                 delete_key(tree, child, key);
-                //Case 2.a.: The right child node has a number of keys equal or greater than the order of the tree
-                //In this case we move the key to be deleted to the child node and recursively delete it
-            } else if (node->children[index]->number_of_keys > tree->order - 1) {
-
+                //Case 2.b.: The right child node has a number of keys equal or greater than the order of the tree
+                //In this case we swap the key to be deleted from the parent node with the first key of the right child and recursively delete it
+            } else if (node->children[index + 1]->number_of_keys > tree->order - 1) {
+                btree_node *child = node->children[index + 1];
+                int temp = child->keys[0];
+                child->keys[0] = node->keys[i];
+                node->keys[i] = temp;
+                delete_key(tree, child, key);
+                //Case 2.c.: Both children have number of keys equal to the tree order-1
+                //In this case we merge the children and move the key to be removed from the parent to the median position of the node containing
+                //the keys merged from the children
+            } else if (node->children[index]->number_of_keys == tree->order - 1 &&
+                       node->children[index + 1]->number_of_keys == tree->order - 1) {
+                btree_node *left_child = node->children[index];
+                btree_node *right_child = node->children[index + 1];
+                //Copies the key from the parent to what is going to be the median position of the node
+                left_child->keys[left_child->number_of_keys] = node->keys[index];
+                left_child->number_of_keys++;
+                //Copies the keys from the right child to the left child
+                for (int i = 0; i < right_child->number_of_keys; i++) {
+                    left_child->keys[left_child->number_of_keys] = right_child->keys[i];
+                    left_child->number_of_keys++;
+                }
+                for (int i = index + 1; i < node->number_of_keys; i++) {
+                    node->children[i] = node->children[i + 1];
+                }
+                remove_key_from_node(node, key);
+                free(right_child);
+                delete_key(tree, left_child, key);
             }
         }
     }

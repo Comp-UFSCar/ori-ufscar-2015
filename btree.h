@@ -97,4 +97,9 @@ int delete_key(btree *tree, btree_node *root, int key);
  */
 int remove_key_from_node(btree_node *node, int key);
 
+//btree_node *merge_nodes(btree *tree, btree_node *node1, btree_node *node2) {
+//    btree_node *new_node = allocate_node(tree->order);
+//    new_node->leaf = true;
+//}
+
 #endif //ORI_UFSCAR_2015_BTREE_H
