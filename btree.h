@@ -82,4 +82,19 @@ void print_post_order(btree_node *root);
  */
 void print_node(btree_node *node);
 
+/**
+ * @brief Removes a key from a B-Tree
+ * @param tree Pointer to B-Tree
+ * @param root Pointer to the root node of the tree
+ * @param key Key to be removed
+ */
+int delete_key(btree *tree, btree_node *root, int key);
+
+/**
+ * @brief Removes a key from a node
+ * @param node Node containing the key
+ * @param key Key to be removed
+ */
+int remove_key_from_node(btree_node *node, int key);
+
 #endif //ORI_UFSCAR_2015_BTREE_H

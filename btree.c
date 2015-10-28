@@ -140,3 +140,62 @@ void print_node(btree_node *node) {
     }
     printf("\n");
 }
+
+int remove_key_from_node(btree_node *node, int key) {
+    int i = 0;
+    while (node->keys[i] != key && i < node->number_of_keys) {
+        i++;
+    }
+
+    if (i == node->number_of_keys) {
+        return 0;
+    }
+
+    for (i; i < node->number_of_keys - 1; i++) {
+        node->keys[i] = node->keys[i + 1];
+    }
+
+    node->number_of_keys--;
+
+    return 1;
+}
+
+int delete_key(btree *tree, btree_node *node, int key) {
+    int i = 0;
+    int index = 0;
+    bool found = false;
+    //Try to find the key in the node. If it is not found, index is going to indicate the path to go
+    while (i < node->number_of_keys && key > node->keys[i]) {
+        i++;
+    }
+    index = i;
+
+    if (i < node->number_of_keys && key == node->keys[i]) {
+        found = true;
+    }
+
+    if (found) {
+        //Case 1: The node containing the key is found and is the leaf node
+        //Allow deletion of key if the node has more than order - 1 keys or if the node is the root of the tree
+        if (node->leaf && node->number_of_keys > tree->order - 1 || node->leaf && tree->root == node) {
+            return remove_key_from_node(node, key);
+        }
+
+        //Case 2: The node containing the key is an internal node
+        if (node->leaf == false) {
+            //Case 2.a.: The left child node has a number of keys equal or greater than the order of the tree
+            //In this case we move the key to be deleted to the child node and recursively delete it
+            if (node->children[index]->number_of_keys > tree->order - 1) {
+                btree_node *child = node->children[index];
+                int temp = child->keys[child->number_of_keys - 1];
+                child->keys[child->number_of_keys - 1] = node->keys[i];
+                node->keys[i] = temp;
+                delete_key(tree, child, key);
+                //Case 2.a.: The right child node has a number of keys equal or greater than the order of the tree
+                //In this case we move the key to be deleted to the child node and recursively delete it
+            } else if (node->children[index]->number_of_keys > tree->order - 1) {
+
+            }
+        }
+    }
+}
