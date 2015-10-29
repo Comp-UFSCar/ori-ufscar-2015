@@ -87,6 +87,7 @@ void print_node(btree_node *node);
  * @param tree Pointer to B-Tree
  * @param root Pointer to the root node of the tree
  * @param key Key to be removed
+ * * @returns 1 if the key is deleted from the node and 1 otherwise
  */
 int delete_key(btree *tree, btree_node *root, int key);
 
@@ -94,6 +95,7 @@ int delete_key(btree *tree, btree_node *root, int key);
  * @brief Removes a key from a node
  * @param node Node containing the key
  * @param key Key to be removed
+ * @returns 1 if the key is removed from the node and 1 otherwise
  */
 int remove_key_from_node(btree_node *node, int key);
 

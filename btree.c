@@ -164,7 +164,11 @@ int delete_key(btree *tree, btree_node *node, int key) {
     int i = 0;
     int index = 0;
     bool found = false;
-    //Try to find the key in the node. If it is not found, index is going to indicate the path to go
+
+    if (node == NULL) {
+        return 0;
+    }
+    //Try to find the key in the node. If it is not found, index is going to indicate root of the subtree that must contain the key
     while (i < node->number_of_keys && key > node->keys[i]) {
         i++;
     }
@@ -221,6 +225,13 @@ int delete_key(btree *tree, btree_node *node, int key) {
                 free(right_child);
                 delete_key(tree, left_child, key);
             }
+
+        }
+        //Case 3: if the key is not in a internal node, find the root of the subtree that must contain the key
+    } else {
+        //Nothing needs to be done
+        if (node->children[index]->number_of_keys > tree->order - 1) {
+            delete_key(tree, node->children[index], key);
         }
     }
 }
