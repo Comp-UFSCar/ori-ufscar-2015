@@ -5,6 +5,7 @@
 
 #ifndef ORI_UFSCAR_2015_BTREE_H
 #define ORI_UFSCAR_2015_BTREE_H
+#include "stdbool.h"
 
 /**
  * @brief A B-Tree Node
