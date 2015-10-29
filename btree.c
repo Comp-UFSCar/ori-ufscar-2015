@@ -229,9 +229,57 @@ int delete_key(btree *tree, btree_node *node, int key) {
         }
         //Case 3: if the key is not in a internal node, find the root of the subtree that must contain the key
     } else {
-        //Nothing needs to be done
+        //Recursively calls deletion in the proper subtree
         if (node->children[index]->number_of_keys > tree->order - 1) {
             delete_key(tree, node->children[index], key);
+        } else {
+            //Parent of the root of the subtree that contains the key to be removed
+            btree_node *parent = node;
+            //Root of the subtree
+            node = node->children[index];
+            btree_node *left_sibling;
+            btree_node *right_sibling;
+            //Determines left and right siblings of the root of the subtree
+            if (index == 0) {
+                left_sibling = NULL;
+                right_sibling = parent->children[1];
+            } else if (index == parent->number_of_keys) {
+                left_sibling = parent->children[parent->number_of_keys - 1];
+                right_sibling = NULL;
+            } else {
+                left_sibling = parent->children[index - 1];
+                right_sibling = parent->children[index + 1];
+            }
+            //Case 3.a.: If the root of the subtree has tree order - 1 amount of keys but it has a sibling with at least the tree order amount of keys
+            //Moves a key from the sibling node to the root of the subtree and moves a key from the parent of the root to the root of the subtree
+            if (left_sibling != NULL && left_sibling->number_of_keys > tree->order - 1) {
+                btree_node *right_subtree = left_sibling->children[left_sibling->number_of_keys];
+                int temp = parent->keys[index - 1];
+                parent->keys[index - 1] = left_sibling->keys[left_sibling->number_of_keys - 1];
+                remove_key_from_node(left_sibling, parent->keys[index - 1]);
+                int j = node->number_of_keys;
+                for (j; j > 0; j--) {
+                    node->keys[j] = node->keys[j - 1];
+                    node->children[j + 1] = node->children[j];
+                }
+                node->keys[j] = temp;
+                node->children[j + 1] = node->children[j];
+                node->children[j] = right_subtree;
+                node->number_of_keys++;
+                delete_key(tree, node, key);
+            } else if (right_sibling != NULL && right_sibling->number_of_keys > tree->order - 1) {
+                btree_node *left_subtree = right_sibling->children[0];
+                int temp = parent->keys[index];
+                parent->keys[index] = right_sibling->keys[0];
+                for (int j = 0; j < right_sibling->number_of_keys; j++) {
+                    right_sibling->children[j] = right_sibling->children[j + 1];
+                }
+                remove_key_from_node(right_sibling, parent->keys[index]);
+                node->keys[node->number_of_keys] = temp;
+                node->children[node->number_of_keys + 1] = left_subtree;
+                node->number_of_keys++;
+                delete_key(tree, node, key);
+            }
         }
     }
 }
