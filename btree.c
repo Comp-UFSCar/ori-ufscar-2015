@@ -299,16 +299,20 @@ int delete_key(btree *tree, btree_node *node, int key) {
                 //Copies last children from node
                 left_sibling->children[left_sibling->number_of_keys] = node->children[j];
 
-                for (int j = index - 1; j < parent->number_of_keys; j++) {
+                if (left_sibling->leaf) {
+                    j = index;
+                } else {
+                    j = index - 1;
+                    free(node);
+                }
+
+                for (j; j < parent->number_of_keys; j++) {
                     parent->children[j] = parent->children[j + 1];
                 }
                 remove_key_from_node(parent, parent->keys[index - 1]);
-                free(node);
                 if (parent == tree->root && parent->number_of_keys == 0) {
                     tree->root = left_sibling;
                 }
-                printf("\n\n");
-                print_post_order(tree->root);
                 delete_key(tree, left_sibling, key);
                 //Merge with right sibling
             } else if (right_sibling != NULL && right_sibling->number_of_keys == tree->order - 1) {
@@ -325,16 +329,19 @@ int delete_key(btree *tree, btree_node *node, int key) {
                 //Copies last children from the right sibling
                 node->children[node->number_of_keys] = right_sibling->children[j];
 
-                for (int j = index; j < parent->number_of_keys; j++) {
+                if (right_sibling->leaf) {
+                    j = index + 1;
+                } else {
+                    j = index;
+                    free(right_sibling);
+                }
+                for (j; j < parent->number_of_keys; j++) {
                     parent->children[j] = parent->children[j + 1];
                 }
                 remove_key_from_node(parent, parent->keys[index]);
-                free(right_sibling);
                 if (parent == tree->root && parent->number_of_keys == 0) {
                     tree->root = node;
                 }
-                printf("\n\n");
-                print_post_order(tree->root);
                 delete_key(tree, node, key);
             }
         }
