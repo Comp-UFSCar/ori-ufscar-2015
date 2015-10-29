@@ -229,6 +229,10 @@ int delete_key(btree *tree, btree_node *node, int key) {
         }
         //Case 3: if the key is not in a internal node, find the root of the subtree that must contain the key
     } else {
+        //The key to be deleted is not in the tree
+        if (node->leaf == true) {
+            return 0;
+        }
         //Recursively calls deletion in the proper subtree
         if (node->children[index]->number_of_keys > tree->order - 1) {
             delete_key(tree, node->children[index], key);
@@ -250,7 +254,7 @@ int delete_key(btree *tree, btree_node *node, int key) {
                 left_sibling = parent->children[index - 1];
                 right_sibling = parent->children[index + 1];
             }
-            //Case 3.a.: If the root of the subtree has tree order - 1 amount of keys but it has a sibling with at least the tree order amount of keys
+            //Case 3.a.: If the root of the subtree has tree_order - 1 amount of keys but it has a sibling with at least the tree order amount of keys
             //Moves a key from the sibling node to the root of the subtree and moves a key from the parent of the root to the root of the subtree
             if (left_sibling != NULL && left_sibling->number_of_keys > tree->order - 1) {
                 btree_node *right_subtree = left_sibling->children[left_sibling->number_of_keys];
@@ -278,6 +282,59 @@ int delete_key(btree *tree, btree_node *node, int key) {
                 node->keys[node->number_of_keys] = temp;
                 node->children[node->number_of_keys + 1] = left_subtree;
                 node->number_of_keys++;
+                delete_key(tree, node, key);
+                //Case 3.b: if both sibling nodes have tree_order -1 amount of keys, merge siblings
+                //Merge with left_sibling
+            } else if (left_sibling != NULL && left_sibling->number_of_keys == tree->order - 1) {
+                //Copies the key from the parent to what is going to be the median position of the node
+                left_sibling->keys[left_sibling->number_of_keys] = parent->keys[index - 1];
+                left_sibling->number_of_keys++;
+                //Copies the keys from the node to the left sibling
+                int j = 0;
+                for (j; j < node->number_of_keys; j++) {
+                    left_sibling->keys[left_sibling->number_of_keys] = node->keys[j];
+                    left_sibling->children[left_sibling->number_of_keys] = node->children[j];
+                    left_sibling->number_of_keys++;
+                }
+                //Copies last children from node
+                left_sibling->children[left_sibling->number_of_keys] = node->children[j];
+
+                for (int j = index - 1; j < parent->number_of_keys; j++) {
+                    parent->children[j] = parent->children[j + 1];
+                }
+                remove_key_from_node(parent, parent->keys[index - 1]);
+                free(node);
+                if (parent == tree->root && parent->number_of_keys == 0) {
+                    tree->root = left_sibling;
+                }
+                printf("\n\n");
+                print_post_order(tree->root);
+                delete_key(tree, left_sibling, key);
+                //Merge with right sibling
+            } else if (right_sibling != NULL && right_sibling->number_of_keys == tree->order - 1) {
+                //Copies the key from the parent to what is going to be the median position of the node
+                node->keys[node->number_of_keys] = parent->keys[index];
+                node->number_of_keys++;
+                //Copies the keys from the right sibling to the node
+                int j = 0;
+                for (j; j < right_sibling->number_of_keys; j++) {
+                    node->keys[node->number_of_keys] = right_sibling->keys[j];
+                    node->children[node->number_of_keys] = right_sibling->children[j];
+                    node->number_of_keys++;
+                }
+                //Copies last children from the right sibling
+                node->children[node->number_of_keys] = right_sibling->children[j];
+
+                for (int j = index; j < parent->number_of_keys; j++) {
+                    parent->children[j] = parent->children[j + 1];
+                }
+                remove_key_from_node(parent, parent->keys[index]);
+                free(right_sibling);
+                if (parent == tree->root && parent->number_of_keys == 0) {
+                    tree->root = node;
+                }
+                printf("\n\n");
+                print_post_order(tree->root);
                 delete_key(tree, node, key);
             }
         }
