@@ -160,7 +160,7 @@ btree_node *remove_key_from_node(btree_node *node, int key) {
     return node;
 }
 
-int delete_key(btree *tree, btree_node *node, int key) {
+btree_node *delete_key(btree *tree, btree_node *node, int key) {
     int i = 0;
     int index = 0;
     bool found = false;

@@ -71,6 +71,15 @@ void split_child(btree_node *parent, int position, int order);
 btree_node *insert(btree *tree, int key);
 
 /**
+ * @brief Inserts a key in a nonfull B-Tree node
+ * @param node A B-Tree node
+ * @param key Key to be inserted
+ * @param order Order of the tree
+ * @returns Node where the key is inserted
+ */
+btree_node *insert_nonfull(btree_node *node, int key, int order);
+
+/**
  * @brief Print a B-Tree in-order
  * First it prints the children and then the root
  * @param root The root of the B-Tree
@@ -90,7 +99,7 @@ void print_node(btree_node *node);
  * @param key Key to be removed
  * @returns Node where the key was removed
  */
-int delete_key(btree *tree, btree_node *root, int key);
+btree_node *delete_key(btree *tree, btree_node *root, int key);
 
 /**
  * @brief Removes a key from a node
