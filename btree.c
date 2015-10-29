@@ -77,7 +77,7 @@ void split_child(btree_node *parent, int position, int order) {
     parent->number_of_keys++;
 }
 
-void insert_nonfull(btree_node *node, int key, int order) {
+btree_node *insert_nonfull(btree_node *node, int key, int order) {
     int i = node->number_of_keys;
     //If node is not a leaf, shift keys in order to open space to insert the new key
     if (node->leaf) {
@@ -107,7 +107,7 @@ void insert_nonfull(btree_node *node, int key, int order) {
     }
 }
 
-void insert(btree *tree, int key) {
+btree_node *insert(btree *tree, int key) {
     btree_node *root = tree->root;
     //If root is full, allocates a new node
     if (root->number_of_keys == 2 * tree->order - 1) {
@@ -117,9 +117,9 @@ void insert(btree *tree, int key) {
         new_node->number_of_keys = 0;
         new_node->children[0] = root;
         split_child(new_node, 0, tree->order);
-        insert_nonfull(new_node, key, tree->order);
+        return insert_nonfull(new_node, key, tree->order);
     } else {
-        insert_nonfull(root, key, tree->order);
+        return insert_nonfull(root, key, tree->order);
     }
 }
 
@@ -141,14 +141,14 @@ void print_node(btree_node *node) {
     printf("\n");
 }
 
-int remove_key_from_node(btree_node *node, int key) {
+btree_node *remove_key_from_node(btree_node *node, int key) {
     int i = 0;
     while (node->keys[i] != key && i < node->number_of_keys) {
         i++;
     }
 
     if (i == node->number_of_keys) {
-        return 0;
+        return NULL;
     }
 
     for (i; i < node->number_of_keys - 1; i++) {
@@ -157,7 +157,7 @@ int remove_key_from_node(btree_node *node, int key) {
 
     node->number_of_keys--;
 
-    return 1;
+    return node;
 }
 
 int delete_key(btree *tree, btree_node *node, int key) {
@@ -166,7 +166,7 @@ int delete_key(btree *tree, btree_node *node, int key) {
     bool found = false;
 
     if (node == NULL) {
-        return 0;
+        return NULL;
     }
     //Try to find the key in the node. If it is not found, index is going to indicate root of the subtree that must contain the key
     while (i < node->number_of_keys && key > node->keys[i]) {
@@ -231,7 +231,7 @@ int delete_key(btree *tree, btree_node *node, int key) {
     } else {
         //The key to be deleted is not in the tree
         if (node->leaf == true) {
-            return 0;
+            return NULL;
         }
         //Recursively calls deletion in the proper subtree
         if (node->children[index]->number_of_keys > tree->order - 1) {

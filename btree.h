@@ -66,8 +66,9 @@ void split_child(btree_node *parent, int position, int order);
  * @brief Inserts a key in a B-Tree
  * @param tree A B-Tree
  * @param key Key to be inserted
+ * @returns Node where the key is inserted
  */
-void insert(btree *tree, int key);
+btree_node *insert(btree *tree, int key);
 
 /**
  * @brief Print a B-Tree in-order
@@ -87,7 +88,7 @@ void print_node(btree_node *node);
  * @param tree Pointer to B-Tree
  * @param root Pointer to the root node of the tree
  * @param key Key to be removed
- * * @returns 1 if the key is deleted from the node and 1 otherwise
+ * @returns Node where the key was removed
  */
 int delete_key(btree *tree, btree_node *root, int key);
 
@@ -95,13 +96,7 @@ int delete_key(btree *tree, btree_node *root, int key);
  * @brief Removes a key from a node
  * @param node Node containing the key
  * @param key Key to be removed
- * @returns 1 if the key is removed from the node and 1 otherwise
+ * @returns Node where the key was removed
  */
-int remove_key_from_node(btree_node *node, int key);
-
-//btree_node *merge_nodes(btree *tree, btree_node *node1, btree_node *node2) {
-//    btree_node *new_node = allocate_node(tree->order);
-//    new_node->leaf = true;
-//}
-
+btree_node *remove_key_from_node(btree_node *node, int key);
 #endif //ORI_UFSCAR_2015_BTREE_H
